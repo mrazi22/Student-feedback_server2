@@ -5,10 +5,16 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.studez_feed.screens.AdminDashboardScreen
+import com.example.studez_feed.screens.CreateFeedbackQuestionsScreen
+import com.example.studez_feed.screens.FeedbackHistoryScreen
+import com.example.studez_feed.screens.FeedbackManagementScreen
 import com.example.studez_feed.screens.FeedbackScreen
 import com.example.studez_feed.screens.HomeScreen
 import com.example.studez_feed.screens.LoginScreen
+import com.example.studez_feed.screens.ManageFeedbackQuestionsScreen
+import com.example.studez_feed.screens.ManageUsersScreen
 import com.example.studez_feed.screens.SignUpScreen
+import com.example.studez_feed.screens.StudentProfileScreen
 
 
 sealed class Screen(val route: String) {
@@ -49,5 +55,32 @@ fun NavGraph(navController: NavHostController) {
             val userToken = backStackEntry.arguments?.getString("userToken") ?: ""
             FeedbackScreen(navController = navController, userToken = userToken) // ✅ Pass userToken
         }
+        composable("feedbackHistory/{userToken}") { backStackEntry ->
+            val userToken = backStackEntry.arguments?.getString("userToken") ?: ""
+            FeedbackHistoryScreen(navController = navController, userToken = userToken) // ✅ Pass token to FeedbackHistoryScreen
+        }
+        composable("feedbackManagement/{adminToken}") { backStackEntry ->
+            val adminToken = backStackEntry.arguments?.getString("adminToken") ?: ""
+            FeedbackManagementScreen(navController = navController, adminToken = adminToken) // ✅ Pass token to FeedbackManagementScreen
+        }
+        composable("createFeedbackQuestions/{adminToken}") { backStackEntry ->
+            val token = backStackEntry.arguments?.getString("adminToken") ?: ""
+            CreateFeedbackQuestionsScreen(navController, token)
+        }
+
+        composable("manageFeedbackQuestions/{adminToken}") { backStackEntry ->
+            val adminToken = backStackEntry.arguments?.getString("adminToken") ?: ""
+            ManageFeedbackQuestionsScreen(navController, adminToken)
+        }
+        composable("studentProfile/{userToken}") { backStackEntry ->
+            val userToken = backStackEntry.arguments?.getString("userToken") ?: ""
+            StudentProfileScreen(navController, userToken)
+        }
+        composable("manageUsers/{token}") { backStackEntry ->
+            val token = backStackEntry.arguments?.getString("token") ?: ""
+            ManageUsersScreen(navController, token)
+        }
+
+
     }
 }

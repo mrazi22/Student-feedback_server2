@@ -1,6 +1,5 @@
 package com.example.studez_feed.network
 
-import com.example.studez_feed.navigation.Screen
 import com.google.gson.annotations.SerializedName
 import retrofit2.Call
 import retrofit2.Response
@@ -160,7 +159,7 @@ interface ApiService {
     @PUT("profile")
     fun updateUserProfile(
         @Header("Authorization") token: String,
-        @Body updatedProfile: Screen.UserProfile
+        @Body updatedProfile: UserProfile
     ): Call<Void>
 
     // ✅ Get all users
