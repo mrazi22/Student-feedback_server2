@@ -50,6 +50,10 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
+    implementation(libs.androidx.appcompat)
+    implementation(libs.material)
+    implementation(libs.androidx.activity)
+    implementation(libs.androidx.constraintlayout)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
@@ -90,6 +94,9 @@ dependencies {
     // ... other dependencies ...
     implementation(libs.kotlinx.serialization.json) // Kotlin serialization library
     implementation(libs.retrofit2.kotlinx.serialization.converter)
+
+    //lottie animation
+    implementation(libs.lottie.compose)
 
 
 

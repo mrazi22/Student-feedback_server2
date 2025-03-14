@@ -66,60 +66,77 @@ fun FeedbackManagementScreen(navController: NavController?, adminToken: String) 
         }
     }
 
-    Column(
+    Surface(
+        color = Color.White,
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
-            .padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+            .padding(28.dp)
+            .background(Color.White)
+            .fillMaxWidth()
     ) {
-        Text(text = "Feedback Management", fontSize = 26.sp, color = MaterialTheme.colorScheme.primary)
-        Spacer(modifier = Modifier.height(16.dp))
 
-        OutlinedTextField(
-            value = searchQuery,
-            onValueChange = { searchQuery = it },
-            label = { Text("Search Feedback") },
-            modifier = Modifier.fillMaxWidth()
-        )
-        Spacer(modifier = Modifier.height(12.dp))
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.background)
+                .padding(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                text = "Feedback Management",
+                fontSize = 26.sp,
+                color = MaterialTheme.colorScheme.primary
+            )
+            Spacer(modifier = Modifier.height(16.dp))
 
-        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
-            filters.forEach { filter ->
-                FilterChip(
-                    selected = selectedFilter == filter,
-                    onClick = { selectedFilter = filter },
-                    label = { Text(filter.capitalize()) }
-                )
-            }
-        }
+            OutlinedTextField(
+                value = searchQuery,
+                onValueChange = { searchQuery = it },
+                label = { Text("Search Feedback") },
+                modifier = Modifier.fillMaxWidth()
+            )
+            Spacer(modifier = Modifier.height(12.dp))
 
-        Spacer(modifier = Modifier.height(16.dp))
-
-        if (isLoading) {
-            CircularProgressIndicator()
-        } else if (errorMessage != null) {
-            Text(text = errorMessage!!, color = Color.Red, fontSize = 16.sp)
-        } else {
-            LazyColumn(modifier = Modifier.fillMaxSize()) {
-                items(
-                    feedbackList
-                        .filter { it.status == selectedFilter || selectedFilter == "All" }
-                        .filter { it.feedback.contains(searchQuery, ignoreCase = true) }
-                        .sortedByDescending { it._id }
-                ) { feedback ->
-                    FeedbackManagementCard(
-                        feedback,
-                        feedbackViewModel,
-                        adminToken,
-                        context
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceEvenly
+            ) {
+                filters.forEach { filter ->
+                    FilterChip(
+                        selected = selectedFilter == filter,
+                        onClick = { selectedFilter = filter },
+                        label = { Text(filter.capitalize()) }
                     )
                 }
             }
-        }
 
-        // Show Snackbar notifications
-        SnackbarHost(hostState = snackbarHostState)
+            Spacer(modifier = Modifier.height(16.dp))
+
+            if (isLoading) {
+                CircularProgressIndicator()
+            } else if (errorMessage != null) {
+                Text(text = errorMessage!!, color = Color.Red, fontSize = 16.sp)
+            } else {
+                LazyColumn(modifier = Modifier.fillMaxSize()) {
+                    items(
+                        feedbackList
+                            .filter { it.status == selectedFilter || selectedFilter == "All" }
+                            .filter { it.feedback.contains(searchQuery, ignoreCase = true) }
+                            .sortedByDescending { it._id }
+                    ) { feedback ->
+                        FeedbackManagementCard(
+                            feedback,
+                            feedbackViewModel,
+                            adminToken,
+                            context
+                        )
+                    }
+                }
+            }
+
+            // Show Snackbar notifications
+            SnackbarHost(hostState = snackbarHostState)
+        }
     }
 }
 

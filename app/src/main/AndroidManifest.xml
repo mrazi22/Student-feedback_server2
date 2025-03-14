@@ -2,10 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
     <!-- ✅ Allow Internet Access -->
-    <uses-permission android:name="android.permission.INTERNET"/>
-    <!-- ✅ Check Network State (Required for detecting connectivity changes) -->
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
-    <!-- ✅ Foreground Service for Connectivity Callbacks (For API 28+) -->
+    <uses-permission android:name="android.permission.INTERNET" /> <!-- ✅ Check Network State (Required for detecting connectivity changes) -->
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" /> <!-- ✅ Foreground Service for Connectivity Callbacks (For API 28+) -->
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
 
     <application
@@ -15,10 +13,14 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
-        android:usesCleartextTraffic="true"
         android:supportsRtl="true"
         android:theme="@style/Theme.STUDEZFEED"
+        android:usesCleartextTraffic="true"
         tools:targetApi="31">
+        <activity
+            android:name=".splashActivity"
+            android:exported="false"/>
+
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -30,6 +32,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <meta-data
+            android:name="preloaded_fonts"
+            android:resource="@array/preloaded_fonts" />
     </application>
 
 </manifest>

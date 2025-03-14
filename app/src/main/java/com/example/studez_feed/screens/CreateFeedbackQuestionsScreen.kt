@@ -33,116 +33,152 @@ fun CreateFeedbackQuestionsScreen(navController: NavController?, adminToken: Str
 
     val questionList = remember { mutableStateListOf<QuestionWithChoices>() }
 
-    Column(
+
+    Surface(
+        color = Color.White,
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
-            .padding(16.dp)
-            .verticalScroll(rememberScrollState()), // Enable scrolling
-        horizontalAlignment = Alignment.CenterHorizontally
+            .padding(28.dp)
+            .background(Color.White)
+            .fillMaxWidth()
     ) {
-        Text("Create Feedback Questions", fontSize = 24.sp, color = MaterialTheme.colorScheme.primary)
-        Spacer(modifier = Modifier.height(16.dp))
 
-        // Category Dropdown
-        ExposedDropdownMenuBox(
-            expanded = expanded,
-            onExpandedChange = { expanded = it },
-            modifier = Modifier.fillMaxWidth()
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.background)
+                .padding(16.dp)
+                .verticalScroll(rememberScrollState()), // Enable scrolling
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            OutlinedTextField(
-                value = selectedCategory,
-                onValueChange = {},
-                label = { Text("Select Category") },
-                readOnly = true,
-                modifier = Modifier.fillMaxWidth().menuAnchor(),
-                trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) }
+            Text(
+                "Create Feedback Questions",
+                fontSize = 24.sp,
+                color = MaterialTheme.colorScheme.primary
             )
-            ExposedDropdownMenu(
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Category Dropdown
+            ExposedDropdownMenuBox(
                 expanded = expanded,
-                onDismissRequest = { expanded = false }
+                onExpandedChange = { expanded = it },
+                modifier = Modifier.fillMaxWidth()
             ) {
-                categories.forEach { category ->
-                    DropdownMenuItem(
-                        text = { Text(category) },
-                        onClick = {
-                            selectedCategory = category
-                            expanded = false
-                        }
-                    )
-                }
-            }
-        }
-
-        Spacer(modifier = Modifier.height(12.dp))
-
-        // Questions with Multiple Choices
-        questionList.forEachIndexed { index, questionWithChoices ->
-            QuestionCard(
-                questionWithChoices,
-                onUpdateQuestion = { newText -> questionList[index] = questionList[index].copy(question = newText) },
-                onAddChoice = {
-                    questionList[index] = questionList[index].copy(
-                        choices = questionList[index].choices.toMutableList().apply { add("") }
-                    )
-                },
-                onUpdateChoice = { choiceIndex, newChoice ->
-                    questionList[index] = questionList[index].copy(
-                        choices = questionList[index].choices.toMutableList().apply { set(choiceIndex, newChoice) }
-                    )
-                },
-                onRemoveChoice = { choiceIndex ->
-                    questionList[index] = questionList[index].copy(
-                        choices = questionList[index].choices.toMutableList().apply { removeAt(choiceIndex) }
-                    )
-                },
-                onRemoveQuestion = { questionList.removeAt(index) }
-            )
-        }
-
-        // Add New Question Button
-        TextButton(
-            onClick = { questionList.add(QuestionWithChoices("", mutableListOf(""))) },
-            modifier = Modifier.align(Alignment.End)
-        ) {
-            Icon(imageVector = Icons.Filled.Add, contentDescription = "Add question")
-            Text("Add Question")
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // Save Button
-        Button(
-            onClick = {
-                if (selectedCategory.isEmpty()) {
-                    Toast.makeText(context, "Please select a category!", Toast.LENGTH_SHORT).show()
-                    return@Button
-                }
-                if (questionList.any { it.question.isBlank() || it.choices.any { choice -> choice.isBlank() } }) {
-                    Toast.makeText(context, "All questions and choices must be filled!", Toast.LENGTH_SHORT).show()
-                    return@Button
-                }
-
-                // Convert to API request format
-                val formattedQuestions = questionList.map {
-                    mapOf(
-                        "question" to it.question,
-                        "choices" to it.choices.filter { choice -> choice.isNotBlank() } // Remove empty choices
-                    )
-                }
-
-                feedbackViewModel.createFeedbackTemplate(adminToken, selectedCategory, formattedQuestions) { success ->
-                    if (success) {
-                        Toast.makeText(context, "Questions saved successfully ✅", Toast.LENGTH_SHORT).show()
-                        navController?.navigateUp()
-                    } else {
-                        Toast.makeText(context, "Failed to save questions ❌", Toast.LENGTH_SHORT).show()
+                OutlinedTextField(
+                    value = selectedCategory,
+                    onValueChange = {},
+                    label = { Text("Select Category") },
+                    readOnly = true,
+                    modifier = Modifier.fillMaxWidth().menuAnchor(),
+                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) }
+                )
+                ExposedDropdownMenu(
+                    expanded = expanded,
+                    onDismissRequest = { expanded = false }
+                ) {
+                    categories.forEach { category ->
+                        DropdownMenuItem(
+                            text = { Text(category) },
+                            onClick = {
+                                selectedCategory = category
+                                expanded = false
+                            }
+                        )
                     }
                 }
-            },
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Text("Save Questions", fontSize = 18.sp)
+            }
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            // Questions with Multiple Choices
+            questionList.forEachIndexed { index, questionWithChoices ->
+                QuestionCard(
+                    questionWithChoices,
+                    onUpdateQuestion = { newText ->
+                        questionList[index] = questionList[index].copy(question = newText)
+                    },
+                    onAddChoice = {
+                        questionList[index] = questionList[index].copy(
+                            choices = questionList[index].choices.toMutableList().apply { add("") }
+                        )
+                    },
+                    onUpdateChoice = { choiceIndex, newChoice ->
+                        questionList[index] = questionList[index].copy(
+                            choices = questionList[index].choices.toMutableList()
+                                .apply { set(choiceIndex, newChoice) }
+                        )
+                    },
+                    onRemoveChoice = { choiceIndex ->
+                        questionList[index] = questionList[index].copy(
+                            choices = questionList[index].choices.toMutableList()
+                                .apply { removeAt(choiceIndex) }
+                        )
+                    },
+                    onRemoveQuestion = { questionList.removeAt(index) }
+                )
+            }
+
+            // Add New Question Button
+            TextButton(
+                onClick = { questionList.add(QuestionWithChoices("", mutableListOf(""))) },
+                modifier = Modifier.align(Alignment.End)
+            ) {
+                Icon(imageVector = Icons.Filled.Add, contentDescription = "Add question")
+                Text("Add Question")
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Save Button
+            Button(
+                onClick = {
+                    if (selectedCategory.isEmpty()) {
+                        Toast.makeText(context, "Please select a category!", Toast.LENGTH_SHORT)
+                            .show()
+                        return@Button
+                    }
+                    if (questionList.any { it.question.isBlank() || it.choices.any { choice -> choice.isBlank() } }) {
+                        Toast.makeText(
+                            context,
+                            "All questions and choices must be filled!",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        return@Button
+                    }
+
+                    // Convert to API request format
+                    val formattedQuestions = questionList.map {
+                        mapOf(
+                            "question" to it.question,
+                            "choices" to it.choices.filter { choice -> choice.isNotBlank() } // Remove empty choices
+                        )
+                    }
+
+                    feedbackViewModel.createFeedbackTemplate(
+                        adminToken,
+                        selectedCategory,
+                        formattedQuestions
+                    ) { success ->
+                        if (success) {
+                            Toast.makeText(
+                                context,
+                                "Questions saved successfully ✅",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                            navController?.navigateUp()
+                        } else {
+                            Toast.makeText(
+                                context,
+                                "Failed to save questions ❌",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                    }
+                },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("Save Questions", fontSize = 18.sp)
+            }
         }
     }
 }

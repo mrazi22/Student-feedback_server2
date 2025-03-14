@@ -57,6 +57,7 @@ fun StudentProfileScreen(navController: NavController?, userToken: String) {
     profileViewModel.userProfileResult = { profile ->
         if (profile != null) {
             fullName = profile.name.toString()
+            email = profile.email.toString()
 
             isLoading = false
         } else {

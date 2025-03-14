@@ -15,6 +15,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.capitalize
+import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -44,41 +46,62 @@ fun FeedbackHistoryScreen(navController: NavController?, userToken: String) {
         feedbackHistoryViewModel.fetchFeedbackHistory(userToken)
     }
 
-    Column(
+    Surface(
+        color = MaterialTheme.colorScheme.background,
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
-            .padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+            .padding(28.dp)
+            .background(Color.White)
+            .fillMaxWidth()
     ) {
-        // ✅ Title
-        Text(
-            text = "Feedback History",
-            fontSize = 26.sp,
-            color = MaterialTheme.colorScheme.primary
-        )
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                text = "Feedback History",
+                fontSize = 28.sp,
+                fontWeight = androidx.compose.ui.text.font.FontWeight.Bold,
+                color = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.padding(bottom = 24.dp)
+            )
 
-        Spacer(modifier = Modifier.height(16.dp))
+            when {
+                isLoading -> {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(50.dp),
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                }
 
-        when {
-            isLoading -> {
-                CircularProgressIndicator()
-            }
-            errorMessage != null -> {
-                Text(errorMessage!!, color = Color.Red, fontSize = 16.sp)
-            }
-            feedbackList.isEmpty() -> {
-                Text(
-                    text = "No feedback history available.",
-                    fontSize = 16.sp,
-                    color = Color.Gray,
-                    textAlign = TextAlign.Center
-                )
-            }
-            else -> {
-                LazyColumn(modifier = Modifier.fillMaxSize()) {
-                    items(feedbackList) { feedback ->
-                        FeedbackHistoryCard(feedback)
+                errorMessage != null -> {
+                    Text(
+                        errorMessage!!,
+                        color = MaterialTheme.colorScheme.error,
+                        fontSize = 16.sp,
+                        textAlign = TextAlign.Center
+                    )
+                }
+
+                feedbackList.isEmpty() -> {
+                    Text(
+                        text = "No feedback history available.",
+                        fontSize = 18.sp,
+                        color = Color.Gray,
+                        textAlign = TextAlign.Center
+                    )
+                }
+
+                else -> {
+                    LazyColumn(
+                        modifier = Modifier.fillMaxSize(),
+                        verticalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        items(feedbackList) { feedback ->
+                            FeedbackHistoryCard(feedback)
+                        }
                     }
                 }
             }
@@ -90,58 +113,67 @@ fun FeedbackHistoryScreen(navController: NavController?, userToken: String) {
 fun FeedbackHistoryCard(feedback: FeedbackItem) {
     var expanded by remember { mutableStateOf(false) }
 
-    // ✅ Define status colors
     val statusColor = when (feedback.status.lowercase()) {
-        "pending" -> Color(0xFFFFA500) // Orange
+        "pending" -> Color(0xFFFFC107) // Amber
         "approved" -> Color(0xFF4CAF50) // Green
-        "rejected" -> Color(0xFFFF5252) // Red
+        "rejected" -> Color(0xFFF44336) // Red
         else -> Color.Gray
     }
 
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(8.dp)
-            .shadow(6.dp, RoundedCornerShape(12.dp))
+            .shadow(8.dp, RoundedCornerShape(16.dp))
             .clickable { expanded = !expanded }
             .animateContentSize(),
-        shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
     ) {
-        Column(modifier = Modifier.padding(16.dp)) {
+        Column(
+            modifier = Modifier.padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
             Row(
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween,
+                modifier = Modifier.fillMaxWidth()
             ) {
-                Icon(
-                    imageVector = Icons.Default.History,
-                    contentDescription = "History Icon",
-                    tint = MaterialTheme.colorScheme.primary
-                )
-                Spacer(modifier = Modifier.width(8.dp))
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(
+                        imageVector = Icons.Default.History,
+                        contentDescription = "History Icon",
+                        tint = MaterialTheme.colorScheme.primary
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        text = feedback.category.capitalize(Locale.current),
+                        fontSize = 20.sp,
+                        fontWeight = androidx.compose.ui.text.font.FontWeight.SemiBold
+                    )
+                }
                 Text(
-                    text = feedback.category,
-                    fontSize = 18.sp
-                )
-                Spacer(modifier = Modifier.weight(1f))
-
-                // ✅ Styled Status Text
-                Text(
-                    text = feedback.status.capitalize(),
-                    fontSize = 14.sp,
-                    color = statusColor
+                    text = feedback.status.capitalize(Locale.current),
+                    fontSize = 16.sp,
+                    color = statusColor,
+                    fontWeight = androidx.compose.ui.text.font.FontWeight.Medium
                 )
             }
 
-            Spacer(modifier = Modifier.height(8.dp))
-
-            Text(text = feedback.feedback, fontSize = 16.sp)
+            Text(
+                text = feedback.feedback,
+                fontSize = 16.sp,
+                color = Color.Gray,
+                maxLines = if (expanded) Int.MAX_VALUE else 2,
+                overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
+            )
 
             if (expanded) {
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
-                    text = "Status: ${feedback.status.capitalize()}",
+                    text = "Status: ${feedback.status.capitalize(Locale.current)}",
                     fontSize = 14.sp,
-                    color = statusColor
+                    color = statusColor,
+                    fontWeight = androidx.compose.ui.text.font.FontWeight.Medium
                 )
             }
         }

@@ -44,24 +44,33 @@ fun ManageUsersScreen(navController: NavController?, adminToken: String) {
             }
         }
     }
-
-    Column(
+    Surface(
+        color = Color.White,
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
-            .padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+            .padding(28.dp)
+            .background(Color.White)
+            .fillMaxWidth()
     ) {
-        Text(text = "Manage Users", fontSize = 24.sp, color = MaterialTheme.colorScheme.primary)
-        Spacer(modifier = Modifier.height(16.dp))
 
-        if (isLoading) {
-            CircularProgressIndicator()
-        } else {
-            LazyColumn {
-                items(users) { user ->
-                    UserCard(user, users, userViewModel, adminToken) { updatedUsers ->
-                        users = updatedUsers // ✅ Refresh list after update or delete
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.background)
+                .padding(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(text = "Manage Users", fontSize = 24.sp, color = MaterialTheme.colorScheme.primary)
+            Spacer(modifier = Modifier.height(16.dp))
+
+            if (isLoading) {
+                CircularProgressIndicator()
+            } else {
+                LazyColumn {
+                    items(users) { user ->
+                        UserCard(user, users, userViewModel, adminToken) { updatedUsers ->
+                            users = updatedUsers // ✅ Refresh list after update or delete
+                        }
                     }
                 }
             }

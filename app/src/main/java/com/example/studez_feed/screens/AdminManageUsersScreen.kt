@@ -33,29 +33,38 @@ fun AdminManageUsersScreen(navController: NavController?) {
             )
         )
     }
-
-    Column(
+    Surface(
+        color = Color.White,
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
-            .padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+            .padding(28.dp)
+            .background(Color.White)
+            .fillMaxWidth()
     ) {
-        // Title
-        Text(
-            text = "Manage Users",
-            fontSize = 26.sp,
-            fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.primary
-        )
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.background)
+                .padding(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            // Title
+            Text(
+                text = "Manage Users",
+                fontSize = 26.sp,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.primary
+            )
 
-        // List of Users
-        userList.forEach { user ->
-            UserManagementCard(user, onDelete = {
-                userList = userList.filter { it.id != user.id }
-            })
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // List of Users
+            userList.forEach { user ->
+                UserManagementCard(user, onDelete = {
+                    userList = userList.filter { it.id != user.id }
+                })
+            }
         }
     }
 }

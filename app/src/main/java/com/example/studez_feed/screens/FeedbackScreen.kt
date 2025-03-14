@@ -67,192 +67,215 @@ fun FeedbackScreen(navController: NavController?, userToken: String) {
         }
     }
 
-    Column(
+    Surface(
+        color = Color.White,
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
-            .padding(16.dp)
-            .verticalScroll(scrollState),
-        horizontalAlignment = Alignment.CenterHorizontally
+            .padding(28.dp)
+            .background(Color.White)
+            .fillMaxWidth()
     ) {
-        // Title
-        Text(
-            text = "Submit Your Feedback",
-            fontSize = 26.sp,
-            fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.primary
-        )
 
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // Feedback Form Card
-        Card(
+        Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .shadow(6.dp, RoundedCornerShape(12.dp)),
-            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-            shape = RoundedCornerShape(12.dp)
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.background)
+                .padding(16.dp)
+                .verticalScroll(scrollState),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Column(modifier = Modifier.padding(16.dp)) {
-                // Category Dropdown
-                Text(text = "Category", fontWeight = FontWeight.Medium)
-                ExposedDropdownMenuBox(
-                    expanded = expanded,
-                    onExpandedChange = { expanded = !expanded },
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    OutlinedTextField(
-                        value = category,
-                        onValueChange = {},
-                        label = { Text("Select Category") },
-                        readOnly = true,
-                        trailingIcon = {
-                            ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
-                        },
-                        modifier = Modifier.fillMaxWidth().menuAnchor()
-                    )
-                    ExposedDropdownMenu(
-                        expanded = expanded,
-                        onDismissRequest = { expanded = false }
-                    ) {
-                        listOf("Course", "Facility", "Teacher").forEach { categoryOption ->
-                            DropdownMenuItem(
-                                text = { Text(categoryOption) },
-                                onClick = {
-                                    category = categoryOption
-                                    expanded = false
-                                }
-                            )
-                        }
-                    }
-                }
+            // Title
+            Text(
+                text = "Submit Your Feedback",
+                fontSize = 26.sp,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.primary
+            )
 
-                Spacer(modifier = Modifier.height(12.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
-                // Multiple Choice Questions (Fetched from Backend)
-                feedbackTemplate?.questions?.forEach { questionItem ->
-                    Text(text = questionItem.question, fontWeight = FontWeight.Medium)
-                    Column {
-                        questionItem.choices.forEach { choice ->
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(vertical = 4.dp),
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                RadioButton(
-                                    selected = selectedAnswers[questionItem.question] == choice,
-                                    onClick = { selectedAnswers[questionItem.question] = choice }
-                                )
-                                Spacer(modifier = Modifier.width(8.dp))
-                                Text(text = choice)
-                            }
-                        }
-                    }
-                    Spacer(modifier = Modifier.height(8.dp))
-                }
-            }
-        }
-
-        Spacer(modifier = Modifier.height(24.dp))
-
-        // Buttons with Better Styling
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Button(
-                onClick = {
-                    if (category.isNotBlank()) {
-                        sharedPrefsHelper.saveDraft(category, selectedAnswers)
-                        submissionMessage = "✅ Draft Saved!"
-                    } else {
-                        submissionMessage = "❌ Please select a category first!"
-                    }
-                },
-                colors = ButtonDefaults.buttonColors(containerColor = Color.Gray),
-                shape = RoundedCornerShape(12.dp),
-                modifier = Modifier.weight(1f)
-            ) {
-                Text("Save Draft", color = Color.White)
-            }
-
-            Spacer(modifier = Modifier.width(16.dp))
-
-            // ✅ Submission Button
-            Button(
-                onClick = {
-                    if (category.isBlank()) {
-                        submissionMessage = "❌ Please select a category!"
-                        return@Button
-                    }
-
-                    if (selectedAnswers.isEmpty()) {
-                        submissionMessage = "❌ Please answer all questions!"
-                        return@Button
-                    }
-
-                    isSubmitting = true
-                    submissionMessage = null
-
-                    // ✅ Only keep answers for the selected category
-                    val categoryQuestions = feedbackTemplate?.questions?.map { it.question } ?: emptyList()
-                    val filteredAnswers = selectedAnswers.filterKeys { it in categoryQuestions }
-
-                    if (filteredAnswers.isEmpty()) {
-                        submissionMessage = "❌ Please answer questions for the selected category!"
-                        isSubmitting = false
-                        return@Button
-                    }
-
-                    val feedbackText = filteredAnswers.entries.joinToString("; ") { "${it.key}: ${it.value}" }
-
-                    // ✅ Debug Log for API Call
-                    Log.d("FEEDBACK_SUBMIT", "Submitting feedback -> Category: $category, Feedback: $feedbackText")
-
-                    feedbackViewModel.submitFeedback(userToken, category, feedbackText)
-
-                    feedbackViewModel.feedbackResult = { response ->
-                        isSubmitting = false
-                        submissionMessage = if (response != null) {
-                            "✅ Feedback submitted successfully!"
-                        } else {
-                            "❌ Submission failed. Try again."
-                        }
-                    }
-                },
-                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
-                shape = RoundedCornerShape(12.dp),
-                modifier = Modifier.weight(1f),
-                enabled = !isSubmitting
-            ) {
-                if (isSubmitting) {
-                    CircularProgressIndicator(color = Color.White, modifier = Modifier.size(24.dp))
-                } else {
-                    Text("Submit", color = Color.White)
-                }
-            }
-        }
-
-        Spacer(modifier = Modifier.height(12.dp))
-
-        // ✅ Success/Failure Message (Updated UI)
-        submissionMessage?.let { message ->
+            // Feedback Form Card
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(8.dp),
-                colors = CardDefaults.cardColors(
-                    containerColor = if (message.contains("✅")) Color(0xFF4CAF50) else Color(0xFFFF5252)
-                )
+                    .shadow(6.dp, RoundedCornerShape(12.dp)),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                shape = RoundedCornerShape(12.dp)
             ) {
-                Text(
-                    text = message,
-                    color = Color.White,
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Medium,
-                    modifier = Modifier.padding(12.dp)
-                )
+                Column(modifier = Modifier.padding(16.dp)) {
+                    // Category Dropdown
+                    Text(text = "Category", fontWeight = FontWeight.Medium)
+                    ExposedDropdownMenuBox(
+                        expanded = expanded,
+                        onExpandedChange = { expanded = !expanded },
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        OutlinedTextField(
+                            value = category,
+                            onValueChange = {},
+                            label = { Text("Select Category") },
+                            readOnly = true,
+                            trailingIcon = {
+                                ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
+                            },
+                            modifier = Modifier.fillMaxWidth().menuAnchor()
+                        )
+                        ExposedDropdownMenu(
+                            expanded = expanded,
+                            onDismissRequest = { expanded = false }
+                        ) {
+                            listOf("Course", "Facility", "Teacher").forEach { categoryOption ->
+                                DropdownMenuItem(
+                                    text = { Text(categoryOption) },
+                                    onClick = {
+                                        category = categoryOption
+                                        expanded = false
+                                    }
+                                )
+                            }
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(12.dp))
+
+                    // Multiple Choice Questions (Fetched from Backend)
+                    feedbackTemplate?.questions?.forEach { questionItem ->
+                        Text(text = questionItem.question, fontWeight = FontWeight.Medium)
+                        Column {
+                            questionItem.choices.forEach { choice ->
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(vertical = 4.dp),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    RadioButton(
+                                        selected = selectedAnswers[questionItem.question] == choice,
+                                        onClick = {
+                                            selectedAnswers[questionItem.question] = choice
+                                        }
+                                    )
+                                    Spacer(modifier = Modifier.width(8.dp))
+                                    Text(text = choice)
+                                }
+                            }
+                        }
+                        Spacer(modifier = Modifier.height(8.dp))
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            // Buttons with Better Styling
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Button(
+                    onClick = {
+                        if (category.isNotBlank()) {
+                            sharedPrefsHelper.saveDraft(category, selectedAnswers)
+                            submissionMessage = "✅ Draft Saved!"
+                        } else {
+                            submissionMessage = "❌ Please select a category first!"
+                        }
+                    },
+                    colors = ButtonDefaults.buttonColors(containerColor = Color.Gray),
+                    shape = RoundedCornerShape(12.dp),
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Text("Save Draft", color = Color.White)
+                }
+
+                Spacer(modifier = Modifier.width(16.dp))
+
+                // ✅ Submission Button
+                Button(
+                    onClick = {
+                        if (category.isBlank()) {
+                            submissionMessage = "❌ Please select a category!"
+                            return@Button
+                        }
+
+                        if (selectedAnswers.isEmpty()) {
+                            submissionMessage = "❌ Please answer all questions!"
+                            return@Button
+                        }
+
+                        isSubmitting = true
+                        submissionMessage = null
+
+                        // ✅ Only keep answers for the selected category
+                        val categoryQuestions =
+                            feedbackTemplate?.questions?.map { it.question } ?: emptyList()
+                        val filteredAnswers = selectedAnswers.filterKeys { it in categoryQuestions }
+
+                        if (filteredAnswers.isEmpty()) {
+                            submissionMessage =
+                                "❌ Please answer questions for the selected category!"
+                            isSubmitting = false
+                            return@Button
+                        }
+
+                        val feedbackText =
+                            filteredAnswers.entries.joinToString("; ") { "${it.key}: ${it.value}" }
+
+                        // ✅ Debug Log for API Call
+                        Log.d(
+                            "FEEDBACK_SUBMIT",
+                            "Submitting feedback -> Category: $category, Feedback: $feedbackText"
+                        )
+
+                        feedbackViewModel.submitFeedback(userToken, category, feedbackText)
+
+                        feedbackViewModel.feedbackResult = { response ->
+                            isSubmitting = false
+                            submissionMessage = if (response != null) {
+                                "✅ Feedback submitted successfully!"
+                            } else {
+                                "❌ Submission failed. Try again."
+                            }
+                        }
+                    },
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
+                    shape = RoundedCornerShape(12.dp),
+                    modifier = Modifier.weight(1f),
+                    enabled = !isSubmitting
+                ) {
+                    if (isSubmitting) {
+                        CircularProgressIndicator(
+                            color = Color.White,
+                            modifier = Modifier.size(24.dp)
+                        )
+                    } else {
+                        Text("Submit", color = Color.White)
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            // ✅ Success/Failure Message (Updated UI)
+            submissionMessage?.let { message ->
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(8.dp),
+                    colors = CardDefaults.cardColors(
+                        containerColor = if (message.contains("✅")) Color(0xFF4CAF50) else Color(
+                            0xFFFF5252
+                        )
+                    )
+                ) {
+                    Text(
+                        text = message,
+                        color = Color.White,
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Medium,
+                        modifier = Modifier.padding(12.dp)
+                    )
+                }
             }
         }
     }

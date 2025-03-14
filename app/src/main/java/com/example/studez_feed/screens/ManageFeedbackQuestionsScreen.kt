@@ -45,24 +45,38 @@ fun ManageFeedbackQuestionsScreen(navController: NavController?, adminToken: Str
         }
     }
 
-    Column(
+    Surface(
+        color = Color.White,
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
-            .padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+            .padding(28.dp)
+            .background(Color.White)
+            .fillMaxWidth()
     ) {
-        Text("Manage Feedback Questions", fontSize = 24.sp, color = MaterialTheme.colorScheme.primary)
-        Spacer(modifier = Modifier.height(16.dp))
 
-        if (isLoading) {
-            CircularProgressIndicator()
-        } else {
-            LazyColumn {
-                items(feedbackTemplates) { template ->
-                    FeedbackTemplateCard(template, feedbackViewModel, adminToken, onUpdate = {
-                        feedbackViewModel.getAllFeedbackTemplates(adminToken) // ✅ Refresh UI
-                    })
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.background)
+                .padding(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                "Manage Feedback Questions",
+                fontSize = 24.sp,
+                color = MaterialTheme.colorScheme.primary
+            )
+            Spacer(modifier = Modifier.height(16.dp))
+
+            if (isLoading) {
+                CircularProgressIndicator()
+            } else {
+                LazyColumn {
+                    items(feedbackTemplates) { template ->
+                        FeedbackTemplateCard(template, feedbackViewModel, adminToken, onUpdate = {
+                            feedbackViewModel.getAllFeedbackTemplates(adminToken) // ✅ Refresh UI
+                        })
+                    }
                 }
             }
         }
