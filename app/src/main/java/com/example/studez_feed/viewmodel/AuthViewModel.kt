@@ -57,7 +57,7 @@ class AuthViewModel(application: Application) : AndroidViewModel(application) {
     // ✅ Signup
     fun signup(name: String, email: String, password: String) {
         viewModelScope.launch {
-            AuthRepository.register(name, email, password) { response, errorMessage ->
+            AuthRepository.register(name,email,password) { response, errorMessage ->
                 if (response != null) {
                     signupResult?.invoke(response)
                 } else {

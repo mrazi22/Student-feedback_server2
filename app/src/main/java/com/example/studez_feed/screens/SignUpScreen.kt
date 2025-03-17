@@ -1,5 +1,3 @@
-package com.example.studez_feed.screens
-
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
@@ -191,10 +189,4 @@ fun SignUpScreen(navController: NavController?) {
             Text("Already have an account? Login")
         }
     }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun SignUpScreenPreview() {
-    SignUpScreen(navController = null)
 }

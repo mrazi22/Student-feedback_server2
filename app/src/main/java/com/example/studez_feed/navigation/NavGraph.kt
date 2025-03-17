@@ -1,5 +1,6 @@
 package com.example.studez_feed.navigation
 
+import SignUpScreen
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -13,7 +14,6 @@ import com.example.studez_feed.screens.HomeScreen
 import com.example.studez_feed.screens.LoginScreen
 import com.example.studez_feed.screens.ManageFeedbackQuestionsScreen
 import com.example.studez_feed.screens.ManageUsersScreen
-import com.example.studez_feed.screens.SignUpScreen
 import com.example.studez_feed.screens.StudentProfileScreen
 
 

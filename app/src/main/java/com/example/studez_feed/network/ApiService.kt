@@ -9,7 +9,7 @@ import retrofit2.http.*
 
 data class AuthResponse(val _id: String, val name: String, val email: String, val isAdmin: Boolean, val token: String)
 data class LoginRequest(val email: String, val password: String)
-data class RegisterRequest(val name: String, val email: String, val password: String)
+data class RegisterRequest(val name: String, val email: String, val password: String,)
 // ✅ Request Password Reset Model
 data class ForgotPasswordRequest(val email: String)
 data class ForgotPasswordResponse(val message: String)
