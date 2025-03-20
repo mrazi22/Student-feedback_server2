@@ -10,10 +10,12 @@ import com.example.studez_feed.screens.CreateFeedbackQuestionsScreen
 import com.example.studez_feed.screens.FeedbackHistoryScreen
 import com.example.studez_feed.screens.FeedbackManagementScreen
 import com.example.studez_feed.screens.FeedbackScreen
+import com.example.studez_feed.screens.ForgotPasswordScreen
 import com.example.studez_feed.screens.HomeScreen
 import com.example.studez_feed.screens.LoginScreen
 import com.example.studez_feed.screens.ManageFeedbackQuestionsScreen
 import com.example.studez_feed.screens.ManageUsersScreen
+import com.example.studez_feed.screens.ResetPasswordScreen
 import com.example.studez_feed.screens.StudentProfileScreen
 
 
@@ -30,6 +32,11 @@ sealed class Screen(val route: String) {
     data object UserProfile : Screen("user_profile") {
         val name: Any = ""
     }
+    // ✅ Add Forgot Password Screen Route
+    data object ForgotPassword : Screen("forgot_password")
+
+    // ✅ Add Reset Password Screen Route (With Token Parameter)
+    data object ResetPassword : Screen("reset_password/{resetToken}")
 
 }
 
@@ -80,6 +87,17 @@ fun NavGraph(navController: NavHostController) {
             val token = backStackEntry.arguments?.getString("token") ?: ""
             ManageUsersScreen(navController, token)
         }
+        // ✅ Forgot Password Screen
+        composable("forgot_password") {
+            ForgotPasswordScreen(navController)
+        }
+
+        // ✅ Reset Password Screen with Token
+        composable("reset_password/{resetToken}") { backStackEntry ->
+            val resetToken = backStackEntry.arguments?.getString("resetToken") ?: ""
+            ResetPasswordScreen(navController, resetToken)
+        }
+
 
 
     }

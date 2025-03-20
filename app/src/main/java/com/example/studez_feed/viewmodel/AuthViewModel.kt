@@ -94,5 +94,22 @@ class AuthViewModel(application: Application) : AndroidViewModel(application) {
             }
         }
     }
+    // ✅ Request Forgot Password
+    fun forgotPassword(email: String) {
+        viewModelScope.launch {
+            AuthRepository.forgotPassword(email) { success, message ->
+                _forgotPasswordResult.value = Pair(success, message)
+            }
+        }
+    }
 
+    // ✅ Reset Password
+    fun resetPassword(token: String, newPassword: String) {
+        viewModelScope.launch {
+            AuthRepository.resetPassword(token, newPassword) { success, message ->
+                _resetPasswordResult.value = Pair(success, message)
+            }
+        }
+    }
 }
+

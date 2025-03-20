@@ -1,10 +1,15 @@
 package com.example.studez_feed.repository
 
+import android.util.Log
 import com.example.studez_feed.network.ApiClient
 import com.example.studez_feed.network.ApiService
 import com.example.studez_feed.network.AuthResponse
+import com.example.studez_feed.network.ForgotPasswordRequest
+import com.example.studez_feed.network.ForgotPasswordResponse
 import com.example.studez_feed.network.LoginRequest
 import com.example.studez_feed.network.RegisterRequest
+import com.example.studez_feed.network.ResetPasswordRequest
+import com.example.studez_feed.network.ResetPasswordResponse
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import retrofit2.Call
@@ -70,5 +75,42 @@ object AuthRepository {
             println("❌ [AuthRepository] Logout Failed: ${e.message}") // ✅ Log error
             false
         }
+    }
+    // ✅ Request Forgot Password
+    fun forgotPassword(email: String, onResult: (Boolean, String) -> Unit) {
+        val request = ForgotPasswordRequest(email)
+        apiService.forgotPassword(request).enqueue(object : Callback<ForgotPasswordResponse> {
+            override fun onResponse(call: Call<ForgotPasswordResponse>, response: Response<ForgotPasswordResponse>) {
+                if (response.isSuccessful) {
+                    onResult(true, response.body()?.message ?: "Password reset email sent!")
+                } else {
+                    onResult(false, "Failed to send reset email")
+                }
+            }
+
+            override fun onFailure(call: Call<ForgotPasswordResponse>, t: Throwable) {
+                Log.e("ForgotPassword", "❌ Error: ${t.message}")
+                onResult(false, "Network error")
+            }
+        })
+    }
+
+    // ✅ Reset Password
+    fun resetPassword(token: String, newPassword: String, onResult: (Boolean, String) -> Unit) {
+        val request = ResetPasswordRequest(token, newPassword)
+        apiService.resetPassword(request).enqueue(object : Callback<ResetPasswordResponse> {
+            override fun onResponse(call: Call<ResetPasswordResponse>, response: Response<ResetPasswordResponse>) {
+                if (response.isSuccessful) {
+                    onResult(true, response.body()?.message ?: "Password reset successful!")
+                } else {
+                    onResult(false, "Failed to reset password")
+                }
+            }
+
+            override fun onFailure(call: Call<ResetPasswordResponse>, t: Throwable) {
+                Log.e("ResetPassword", "❌ Error: ${t.message}")
+                onResult(false, "Network error")
+            }
+        })
     }
 }
