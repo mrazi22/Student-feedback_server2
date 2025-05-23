@@ -35,7 +35,7 @@ import kotlinx.coroutines.launch
 fun HomeScreen(navController: NavController?, userToken: String) {
     val profileViewModel: ProfileViewModel = viewModel()
     val authViewModel: AuthViewModel = viewModel(
-        factory = ViewModelProvider.AndroidViewModelFactory.getInstance(navController!!.context.applicationContext as Application)
+        factory = ViewModelProvider.AndroidViewModelFactory.getInstance(navController!!.context.applicationContext as Application)  // Use the application context
     )
 
     var userName by remember { mutableStateOf("Student") }
@@ -43,7 +43,7 @@ fun HomeScreen(navController: NavController?, userToken: String) {
     val scope = rememberCoroutineScope()
 
     // ✅ Fetch user profile when the screen loads
-    LaunchedEffect(Unit) {
+    LaunchedEffect(userToken) { // ⬅️  Use userToken as key, so if it changes, the effect runs again.  Use rememberCoroutineScope
         profileViewModel.userProfileResult = { profile ->
             profile?.let { userName = it.name.split(" ").first() }
         }
@@ -63,15 +63,6 @@ fun HomeScreen(navController: NavController?, userToken: String) {
                         navController?.navigate("studentProfile/$userToken")
                     },
                     icon = { Icon(Icons.Default.Person, contentDescription = "Profile") }
-                )
-                NavigationDrawerItem(
-                    label = { Text("Notifications") },
-                    selected = false,
-                    onClick = {
-                        scope.launch { drawerState.close() }
-                        navController?.navigate("userNotifications/$userToken")
-                    },
-                    icon = { Icon(Icons.Default.Notifications, contentDescription = "Notifications") }
                 )
                 NavigationDrawerItem(
                     label = { Text("Logout") },
@@ -124,7 +115,7 @@ fun HomeScreen(navController: NavController?, userToken: String) {
                         text = "Welcome, $userName!",
                         fontSize = 28.sp,
                         fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.primary,
+                        color = Color.Red,
                         modifier = Modifier.padding(bottom = 24.dp)
                     )
 
@@ -210,7 +201,6 @@ fun HomeScreenCard(title: String, description: String, icon: androidx.compose.ui
         }
     }
 }
-
 
 @Preview(showBackground = true)
 @Composable

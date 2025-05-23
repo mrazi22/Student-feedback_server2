@@ -58,25 +58,25 @@ fun SignUpScreen(navController: NavController?) {
     ) {
         Spacer(modifier = Modifier.height(40.dp))
 
-        // ✅ App Logo
-        Image(
-            painter = painterResource(id = R.drawable.new_logo), // Replace with your logo
-            contentDescription = "App Logo",
-            modifier = Modifier.size(160.dp)
-        )
+//        // ✅ App Logo
+//        Image(
+//            painter = painterResource(id = R.drawable.new_logo), // Replace with your logo
+//            contentDescription = "App Logo",
+//            modifier = Modifier.size(160.dp)
+//        )
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(180.dp))
 
         Text(
             text = "Create an Account",
             fontSize = 24.sp,
-            color = MaterialTheme.colorScheme.primary
+            color = Color.Red
         )
 
         Spacer(modifier = Modifier.height(8.dp))
 
         Text(
-            text = "Sign up to continue",
+            text = "Sign up ",
             fontSize = 16.sp,
             color = Color.Gray
         )
@@ -173,7 +173,8 @@ fun SignUpScreen(navController: NavController?) {
             modifier = Modifier
                 .fillMaxWidth()
                 .height(50.dp),
-            enabled = !isLoading // Disable button while loading
+            enabled = !isLoading, // Disable button while loading,
+            colors = ButtonDefaults.buttonColors(containerColor = Color.Red) // Make the button red
         ) {
             if (isLoading) {
                 CircularProgressIndicator(color = Color.White, modifier = Modifier.size(24.dp))

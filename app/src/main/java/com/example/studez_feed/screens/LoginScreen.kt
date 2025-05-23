@@ -71,19 +71,19 @@ fun LoginScreen(navController: NavController?) {
         Spacer(modifier = Modifier.height(40.dp))
 
         // ✅ App Logo
-        Image(
-            painter = painterResource(id = R.drawable.new_logo),
-            contentDescription = "App Logo",
-            modifier = Modifier.size(160.dp)
-        )
+//        Image(
+//            painter = painterResource(id = R.drawable.new_logo),
+//            contentDescription = "App Logo",
+//            modifier = Modifier.size(160.dp)
+//        )
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(180.dp))
 
         // ✅ Title
         Text(
-            text = "Welcome Back!",
+            text = "Welcome to Feedback!",
             fontSize = 24.sp,
-            color = MaterialTheme.colorScheme.primary
+            color = Color.Red
         )
 
         Spacer(modifier = Modifier.height(8.dp))
@@ -128,12 +128,12 @@ fun LoginScreen(navController: NavController?) {
         Spacer(modifier = Modifier.height(8.dp))
 
         // ✅ Forgot Password Link
-        Text(
-            text = "Forgot Password? Click Here",
-            fontSize = 14.sp,
-            color = Color.Blue,
-            modifier = Modifier.clickable { navController?.navigate(Screen.ForgotPassword.route) }
-        )
+//        Text(
+//            text = "Forgot Password? Click Here",
+//            fontSize = 14.sp,
+//            color = Color.Blue,
+//            modifier = Modifier.clickable { navController?.navigate(Screen.ForgotPassword.route) }
+//        )
 
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -152,10 +152,11 @@ fun LoginScreen(navController: NavController?) {
             modifier = Modifier
                 .fillMaxWidth()
                 .height(50.dp),
-            enabled = !isLoading // Disable button when loading
+            enabled = !isLoading, // Disable button when loading,
+            colors = ButtonDefaults.buttonColors(containerColor = Color.Red) // Make the button red
         ) {
             if (isLoading) {
-                CircularProgressIndicator(color = Color.White, modifier = Modifier.size(24.dp))
+                CircularProgressIndicator(color = Color.Blue, modifier = Modifier.size(24.dp))
             } else {
                 Text(text = "Login", fontSize = 18.sp)
             }

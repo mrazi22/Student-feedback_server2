@@ -54,7 +54,7 @@ fun CreateFeedbackQuestionsScreen(navController: NavController?, adminToken: Str
             Text(
                 "Create Feedback Questions",
                 fontSize = 24.sp,
-                color = MaterialTheme.colorScheme.primary
+                color = Color.Red
             )
             Spacer(modifier = Modifier.height(16.dp))
 
